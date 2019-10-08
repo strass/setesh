@@ -1,0 +1,49 @@
+overwrite: true
+schema:
+  - https://hasura.zaks.pw/v1/graphql:
+      headers:
+        x-hasura-admin-secret: q65sQu1IypFOqSgS2mww
+documents: "**/*.graphql"
+generates:
+  # graphql/types.generated.ts:
+  #   - typescript
+  webapp/src/graphql/types.generated.d.ts:
+    - typescript
+  webapp/src/graphql:
+    preset: near-operation-file
+    presetConfig:
+      extension: .generated.tsx
+      baseTypesPath: ./types.generated.d
+    plugins:
+      - "typescript-operations"
+      - "typescript-react-apollo"
+    config:
+      withHooks: true
+      withHOC: false
+      withComponent: false
+      withMutationFn: false
+  graphql/output.ts:
+    # preset: near-operation-file
+    # presetConfig:
+    #   extension: .generated.tsx
+    #   baseTypesPath: types.generated.ts
+    plugins:
+      - "typescript-document-nodes"
+      - "fragment-matcher"
+  graphql/output.d.ts:
+    # preset: near-operation-file
+    # presetConfig:
+    #   extension: .generated.tsx
+    #   baseTypesPath: types.generated.ts
+    plugins:
+      - "typescript-graphql-files-modules"
+  graphql/resolvers.ts:
+    # preset: near-operation-file
+    # presetConfig:
+    #   extension: .generated.tsx
+    #   baseTypesPath: types.generated.ts
+    plugins:
+      - "typescript-resolvers"
+  graphql/schema.json:
+    plugins:
+      - "introspection"

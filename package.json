@@ -1,0 +1,27 @@
+{
+  "name": "setesh",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "@graphql-codegen/cli": "^1.5.0"
+  },
+  "devDependencies": {
+    "@graphql-codegen/fragment-matcher": "^1.5.0",
+    "@graphql-codegen/introspection": "^1.5.0",
+    "@graphql-codegen/near-operation-file-preset": "^1.5.0",
+    "@graphql-codegen/typescript": "^1.5.0",
+    "@graphql-codegen/typescript-document-nodes": "^1.5.0",
+    "@graphql-codegen/typescript-graphql-files-modules": "^1.5.0",
+    "@graphql-codegen/typescript-operations": "^1.5.0",
+    "@graphql-codegen/typescript-react-apollo": "^1.5.0",
+    "@graphql-codegen/typescript-resolvers": "^1.5.0",
+    "graphql": "^14.4.2"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "codegen:graphql": "graphql-codegen --config codegen.yml"
+  },
+  "author": "",
+  "license": "ISC"
+}
