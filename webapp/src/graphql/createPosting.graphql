@@ -1,0 +1,9 @@
+  mutation createPosting($posting: [postings_insert_input!]!) {
+    insert_postings(objects: $posting) {
+      affected_rows
+      returning {
+        id
+        slug
+      }
+    }
+  }

@@ -1,0 +1,14 @@
+query getGame($gameId: Int!){
+  postings_by_pk(id: $gameId) {
+    author_icon
+    author_name
+    author_url
+    description
+    created_at
+    fields
+    id
+    name
+    slug
+    updated_at
+  }
+}

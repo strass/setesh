@@ -1,0 +1,10 @@
+{
+  "name": "setesh",
+  "build": {
+    "env": {
+      "REACT_APP_CLIENT_ID": "@react_app_client_id",
+      "REACT_APP_CLIENT_SECRET": "@react_app_client_secret",
+      "REACT_APP_HASURA_SECRET": "@react_app_hasura_secret"
+    }
+  }
+}
