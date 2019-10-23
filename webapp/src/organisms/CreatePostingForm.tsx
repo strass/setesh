@@ -7,13 +7,19 @@ import {
   Card,
   Button
 } from "@blueprintjs/core";
-import { set, without, forEach } from "lodash";
+import { set, without, forEach, toNumber } from "lodash";
 import AuthContext from "../context/Auth";
 import { useCreatePostingMutation } from "../graphql/createPosting.generated";
+import { oc } from "ts-optchain";
 
 interface PostingState {
   name: string | undefined;
   description: string | undefined;
+  type: string | undefined;
+  medium: string | undefined;
+  time: string | undefined;
+  players: number | undefined;
+  storyteller: string | undefined;
   fields: {
     name: string | undefined;
     value: string | undefined;
@@ -25,8 +31,6 @@ export default () => {
   const auth = useContext(AuthContext);
   const loggedIn = !!auth.id;
 
-  // const [createPosting, { loading }] = useMutation(CREATE_POSTING);
-
   const [createPosting, { loading }] = useCreatePostingMutation();
 
   const [form, dispatch] = useReducer<Reducer<PostingState, any>>(
@@ -36,7 +40,12 @@ export default () => {
     },
     {
       name: undefined,
+      type: undefined,
+      medium: undefined,
+      time: undefined,
+      players: undefined,
       description: undefined,
+      storyteller: oc(auth).id(),
       fields: [{ name: undefined, value: undefined }]
     }
   );
@@ -72,9 +81,7 @@ export default () => {
                   {
                     ...form,
                     author_name: `@${auth.username}#${auth.discriminator}`,
-                    author_icon: `https://cdn.discordapp.com/avatars/${
-                      auth.id
-                    }/${auth.avatar}.png`,
+                    author_icon: `https://cdn.discordapp.com/avatars/${auth.id}/${auth.avatar}.png`,
                     author_url: `https://setesh.calendar/users/${auth.id}`
                   }
                 ]
@@ -96,7 +103,6 @@ export default () => {
               (form.name || "").length} characters remaining`}
             label="Game Name"
             labelFor="name-input"
-            labelInfo="(required)"
           >
             <InputGroup
               id="name-input"
@@ -104,7 +110,7 @@ export default () => {
               onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                 dispatch({ key: "name", value: e.target.value || "" })
               }
-              onBlur={(e: React.ChangeEvent<HTMLInputElement>) =>
+              onBlur={e =>
                 dispatch({ key: "name", value: e.target.value || "" })
               }
               intent={
@@ -114,18 +120,114 @@ export default () => {
             />
           </FormGroup>
           <FormGroup
+            helperText={`${1024 -
+              (form.description || "").length} characters remaining`}
+            label="Type"
+            labelFor="type-input"
+            labelInfo="Edition, splat, etc."
+          >
+            <InputGroup
+              id="type-input"
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                dispatch({ key: "type", value: e.target.value || "" })
+              }
+              onBlur={e =>
+                dispatch({ key: "type", value: e.target.value || "" })
+              }
+              fill={true}
+              value={form.type}
+              intent={
+                form.type !== undefined && !form.type ? "danger" : undefined
+              }
+            />
+          </FormGroup>
+          <FormGroup
+            helperText={`${1024 -
+              (form.description || "").length} characters remaining`}
+            label="Medium"
+            labelFor="medium-input"
+            labelInfo="Discord Voice / Discord Text / Roll20 / Face to Face"
+          >
+            <InputGroup
+              id="medium-input"
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                dispatch({ key: "medium", value: e.target.value || "" })
+              }
+              onBlur={e =>
+                dispatch({ key: "medium", value: e.target.value || "" })
+              }
+              fill={true}
+              value={form.medium}
+              intent={
+                form.medium !== undefined && !form.medium ? "danger" : undefined
+              }
+            />
+          </FormGroup>
+          <FormGroup
+            helperText={`${1024 -
+              (form.description || "").length} characters remaining`}
+            label="Time and Timezone"
+            labelFor="time-input"
+            labelInfo="When and how often the game takes place"
+          >
+            <InputGroup
+              id="time-input"
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                dispatch({ key: "time", value: e.target.value || "" })
+              }
+              onBlur={e =>
+                dispatch({ key: "time", value: e.target.value || "" })
+              }
+              fill={true}
+              value={form.time}
+              intent={
+                form.time !== undefined && !form.time ? "danger" : undefined
+              }
+            />
+          </FormGroup>
+          <FormGroup
+            helperText={`${1024 -
+              (form.description || "").length} characters remaining`}
+            label="Players"
+            labelFor="players-input"
+            labelInfo="Number of players and open slots"
+          >
+            <InputGroup
+              type="number"
+              id="players-input"
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                dispatch({
+                  key: "players",
+                  value: toNumber(e.target.value) || 0
+                })
+              }
+              onBlur={e =>
+                dispatch({
+                  key: "players",
+                  value: toNumber(e.target.value) || 0
+                })
+              }
+              fill={true}
+              value={form.players as any}
+              intent={
+                form.players !== undefined && !form.players
+                  ? "danger"
+                  : undefined
+              }
+            />
+          </FormGroup>
+          <FormGroup
             helperText={`${2048 -
               (form.description || "").length} characters remaining`}
             label="Description"
             labelFor="description-input"
-            labelInfo="(required)"
           >
             <TextArea
               id="description-input"
-              onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+              onChange={e =>
                 dispatch({ key: "description", value: e.target.value || "" })
               }
-              onBlur={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+              onBlur={e =>
                 dispatch({ key: "description", value: e.target.value || "" })
               }
               fill={true}
@@ -140,7 +242,7 @@ export default () => {
           <div
             style={{ display: "flex", alignItems: "center", marginBottom: 12 }}
           >
-            <H4 style={{ display: "inline" }}>Fields:</H4>
+            <H4 style={{ display: "inline" }}>Custom Fields:</H4>
             <Button
               onClick={() =>
                 dispatch({ key: "fields", value: [...form.fields, {}] })
@@ -166,7 +268,6 @@ export default () => {
                   (f.name || "").length} characters remaining`}
                 label="Field Name"
                 labelFor={`field-${i}-name`}
-                labelInfo="(required)"
               >
                 <InputGroup
                   id={`field-${i}-name`}
@@ -188,7 +289,6 @@ export default () => {
                   (f.value || "").length} characters remaining`}
                 label="Field Value"
                 labelFor={`field-${i}-value`}
-                labelInfo="(required)"
               >
                 <InputGroup
                   id={`field-${i}-value`}
